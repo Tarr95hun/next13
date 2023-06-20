@@ -38,6 +38,7 @@ const fetchRestaurantsByCity = (searchParams: SearchParams) => {
     cuisine: true,
     slug: true,
     location: true,
+    reviews: true,
   };
 
   if (searchParams.city) {
