@@ -44,7 +44,7 @@ const useAuth = () => {
       });
     }
   };
-  
+
   const signup = async (
     {
       email,
