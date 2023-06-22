@@ -13,35 +13,18 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method === "POST") {
-    const { firstName, lastName, email, phone, city, password } =
-      req.body as IInputs;
+    const { email, password } = req.body as IInputs;
 
     const errors: string[] = [];
 
     const validationSchema = [
       {
-        valid: validatior.isLength(firstName, { min: 1, max: 20 }),
-        errorMessage: "First name is invalid",
-      },
-      {
-        valid: validatior.isLength(lastName, { min: 1, max: 20 }),
-        errorMessage: "Last name is invalid",
-      },
-      {
         valid: validatior.isEmail(email),
         errorMessage: "Email is invalid",
       },
       {
-        valid: validatior.isMobilePhone(phone),
-        errorMessage: "Phone number is invalid",
-      },
-      {
-        valid: validatior.isLength(city, { min: 1 }),
-        errorMessage: "City is invalid",
-      },
-      {
-        valid: validatior.isStrongPassword(password),
-        errorMessage: "Password is not strong enough",
+        valid: validatior.isLength(password, { min: 1 }),
+        errorMessage: "Password is not valid",
       },
     ];
 
@@ -53,27 +36,22 @@ export default async function handler(
 
     if (errors.length) return res.status(400).json({ errorMessage: errors[0] });
 
-    const userWithEmail = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { email },
     });
 
-    if (userWithEmail)
+    if (!user)
       return res
-        .status(400)
-        .json({ errorMessage: "Email is associated with another account" });
+        .status(401)
+        .json({ errorMessage: "Email or password is invalid" });
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const isMatch = await bcrypt.compare(password, user.password);
 
-    const user = await prisma.user.create({
-      data: {
-        first_name: firstName,
-        last_name: lastName,
-        password: hashedPassword,
-        city,
-        phone,
-        email,
-      },
-    });
+    if (!isMatch) {
+      return res
+        .status(401)
+        .json({ errorMessage: "Email or password is invalid" });
+    }
 
     const ALG = "HS256";
     const SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
@@ -88,15 +66,13 @@ export default async function handler(
 
     setCookie("jwt", token, { req, res, maxAge: 60 * 6 * 24 }); // 6 days entirely
 
-    return res
-      .status(200)
-      .json({
-        firstName: user.first_name,
-        lastName: user.last_name,
-        email: user.email,
-        city: user.city,
-        phone: user.phone,
-      });
+    return res.status(200).json({
+      firstName: user.first_name,
+      lastName: user.last_name,
+      email: user.email,
+      city: user.city,
+      phone: user.phone,
+    });
   }
 
   return res.status(404).json("Unknown endpoint");

@@ -1,14 +1,15 @@
 import * as React from "react";
 
+export interface IInputs {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  city: string;
+  password: string;
+}
 interface Props {
-  inputs: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone: string;
-    city: string;
-    password: string;
-  };
+  inputs: IInputs;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   isSignin: boolean;
 }
