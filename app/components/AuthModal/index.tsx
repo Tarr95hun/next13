@@ -123,7 +123,7 @@ const LoginModal = ({ isSignin }: { isSignin: boolean }) => {
         className={`${renderContentByIsSignin(
           "bg-blue-400 text-white",
           ""
-        )} border p-1 px-4 rounded mr-3`}
+        )} border p-1 px-4 rounded mr-3 `}
         onClick={handleOpen}
       >
         {renderContentByIsSignin("Sign in", "Sign up")}
