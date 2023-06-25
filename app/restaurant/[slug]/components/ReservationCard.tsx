@@ -5,12 +5,12 @@ import { partySize as partySizes, times } from "../../../data";
 import { useState } from "react";
 
 import "react-datepicker/dist/react-datepicker.css";
-import useAvailibility from "../../../../hooks/useAvailibility";
 import { CircularProgress } from "@mui/material";
 import Link from "next/link";
+import useAvailibility from "../../../../hooks/useAvailibility";
 import {
-  Time,
   convertToDisplayTime,
+  Time,
 } from "../../../../utils/convertToDisplayTime";
 
 function ReservationCard({
@@ -131,8 +131,6 @@ function ReservationCard({
             <p className="text-reg">
               <div className="flex flex-wrap mt-2">
                 {data.map((time) => {
-                  console.log(data);
-
                   return time?.available ? (
                     <Link
                       href={`/reserve/${slug}?date=${day}T${time?.time}&partySize=${partySize}`}
